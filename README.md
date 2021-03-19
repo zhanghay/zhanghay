@@ -1,7 +1,7 @@
 # page
 
 #### 介绍
-个人静态网站
+个人静态网站,感谢https://gitee.com/laoxuai/home 提供的html代码模板
 #### 软件架构
 只html需要添加其他
 
