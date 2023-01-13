@@ -11,10 +11,10 @@
 
 
 │
-├─▣ Computer Version er
+├─▣ Computer Vision researcher
+├─▣ Master of Science in Electrical Engineering student
 ├─▣ 
 ├─▣ 
-├─▣ I am mostly available at <a href="https://com/">The White Circle</a>
 │
 └───────────────────────────────▰▰▰
 
