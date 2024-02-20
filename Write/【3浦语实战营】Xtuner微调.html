@@ -1,0 +1,144 @@
+<html>
+<head>
+  <title>Evernote Export</title>
+  <basefont face="微软雅黑" size="2" />
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+  <meta name="exporter-version" content="YXBJ Windows/608189 (zh-CN, DDL); Windows/10.0.0 (Win64); EDAMVersion=V2;"/>
+  <meta name="content-class" content="yinxiang.markdown"/>
+  <style>
+    body, td {
+      font-family: 微软雅黑;
+      font-size: 12pt;
+    }
+  </style>
+</head>
+<body>
+<a name="5594"/>
+
+<div><span><div style="font-size: 14px; margin: 0; padding: 0; width: 100%;"><h1 style="line-height: 160%; box-sizing: content-box; font-weight: 700; font-size: 41px; border-bottom: 3px double #999; color: #000; margin-top: 14px;">Xtuner微调</h1>
+<div style="line-height: 160%; box-sizing: content-box;"><ul style="line-height: 160%; box-sizing: content-box; display: block; list-style-type: disc; padding-left: 30px; margin: 6px 0 10px; color: #333;"><li style="line-height: 160%; box-sizing: content-box; position: relative;"><a style="line-height: 160%; box-sizing: content-box; text-decoration: underline; color: #5286bc;">Xtuner微调
+</a><ul style="line-height: 160%; box-sizing: content-box; display: block; list-style-type: disc; padding-left: 30px; margin: 6px 0 10px; color: #333; margin-top: 0; margin-bottom: 0;"><li style="line-height: 160%; box-sizing: content-box; position: relative;"><a style="line-height: 160%; box-sizing: content-box; text-decoration: underline; color: #5286bc;">基本思路
+</a></li><li style="line-height: 160%; box-sizing: content-box; position: relative;"><a style="line-height: 160%; box-sizing: content-box; text-decoration: underline; color: #5286bc;">环境准备
+</a><ul style="line-height: 160%; box-sizing: content-box; display: block; list-style-type: disc; padding-left: 30px; margin: 6px 0 10px; color: #333; margin-top: 0; margin-bottom: 0;"><li style="line-height: 160%; box-sizing: content-box; position: relative;"><a style="line-height: 160%; box-sizing: content-box; text-decoration: underline; color: #5286bc;">模型准备
+</a></li><li style="line-height: 160%; box-sizing: content-box; position: relative;"><a style="line-height: 160%; box-sizing: content-box; text-decoration: underline; color: #5286bc;">数据准备
+</a></li></ul></li><li style="line-height: 160%; box-sizing: content-box; position: relative;"><a style="line-height: 160%; box-sizing: content-box; text-decoration: underline; color: #5286bc;">配置文件
+</a></li><li style="line-height: 160%; box-sizing: content-box; position: relative;"><a style="line-height: 160%; box-sizing: content-box; text-decoration: underline; color: #5286bc;">微调
+</a></li><li style="line-height: 160%; box-sizing: content-box; position: relative;"><a style="line-height: 160%; box-sizing: content-box; text-decoration: underline; color: #5286bc;">转为hf模型
+</a></li><li style="line-height: 160%; box-sizing: content-box; position: relative;"><a style="line-height: 160%; box-sizing: content-box; text-decoration: underline; color: #5286bc;">融合
+</a></li><li style="line-height: 160%; box-sizing: content-box; position: relative;"><a style="line-height: 160%; box-sizing: content-box; text-decoration: underline; color: #5286bc;">作业
+</a></li></ul></li></ul></div><h2 style="line-height: 160%; box-sizing: content-box; font-weight: 700; font-size: 34px; border-bottom: 1px solid #dbdbdb; color: #333;">基本思路</h2>
+<p style="line-height: 160%; box-sizing: content-box; margin: 10px 0; color: #333;">微调基本思路：<br/>
+1、准备基础模型<br/>
+2、准备Xtuner工具<br/>
+3、准备自己的数据<br/>
+4、复用Xtuner配置文件<br/>
+4、使用Xtuner训练<br/>
+5、转为hf格式<br/>
+6、与基础模型融合<br/>
+7、调用</p>
+<h2 style="line-height: 160%; box-sizing: content-box; font-weight: 700; font-size: 34px; border-bottom: 1px solid #dbdbdb; color: #333;">环境准备</h2>
+<p style="line-height: 160%; box-sizing: content-box; margin: 10px 0; color: #333;">主要要求：</p>
+<ul style="line-height: 160%; box-sizing: content-box; display: block; list-style-type: disc; padding-left: 30px; margin: 6px 0 10px; color: #333;">
+<li style="line-height: 160%; box-sizing: content-box; position: relative;">python=3.10</li>
+<li style="line-height: 160%; box-sizing: content-box; position: relative;">8G显卡</li>
+<li style="line-height: 160%; box-sizing: content-box; position: relative;">pytorch=2.0.1</li>
+</ul>
+<pre style="line-height: 160%; box-sizing: content-box; border: 0; border-radius: 0; margin: 2px 0 8px; background-color: #f5f7f8;"><code style="display: block; overflow-x: auto; background: #1e1e1e; line-height: 160%; box-sizing: content-box; border: 0; border-radius: 0; letter-spacing: -.3px; padding: 18px; color: #f4f4f4; white-space: pre-wrap;">
+it <span style="color: #4ec9b0; line-height: 160%; box-sizing: content-box;">clone</span> -b v0.1.9  https://github.com/InternLM/xtuner
+
+<span style="color: #4ec9b0; line-height: 160%; box-sizing: content-box;">cd</span> xtuner
+
+<span style="color: #57a64a; font-style: italic; line-height: 160%; box-sizing: content-box;"># 从源码安装 XTuner</span>
+pip install -e <span style="color: #d69d85; line-height: 160%; box-sizing: content-box;">'.[all]'</span>
+</code></pre>
+<h3 style="line-height: 160%; box-sizing: content-box; font-weight: 700; font-size: 27px; color: #333;">模型准备</h3>
+<p style="line-height: 160%; box-sizing: content-box; margin: 10px 0; color: #333;">通过本地、modelscope等方式下载模型。</p>
+<h3 style="line-height: 160%; box-sizing: content-box; font-weight: 700; font-size: 27px; color: #333;">数据准备</h3>
+<p style="line-height: 160%; box-sizing: content-box; margin: 10px 0; color: #333;">公共数据可以从huggingface下载，自己也可自行准备</p>
+<p style="line-height: 160%; box-sizing: content-box; margin: 10px 0; color: #333;"><strong style="line-height: 160%; box-sizing: content-box; font-weight: 700;">公共数据</strong></p>
+<p style="line-height: 160%; box-sizing: content-box; margin: 10px 0; color: #333;"><a href="https://huggingface.co/datasets/timdettmers/openassistant-guanaco/tree/main" style="line-height: 160%; box-sizing: content-box; text-decoration: underline; color: #5286bc;">https://huggingface.co/datasets/timdettmers/openassistant-guanaco/tree/main</a></p>
+<p style="line-height: 160%; box-sizing: content-box; margin: 10px 0; color: #333;"><strong style="line-height: 160%; box-sizing: content-box; font-weight: 700;">自建数据</strong><br/>
+其实是json文件。例如</p>
+<pre style="line-height: 160%; box-sizing: content-box; border: 0; border-radius: 0; margin: 2px 0 8px; background-color: #f5f7f8;"><code style="display: block; overflow-x: auto; background: #1e1e1e; line-height: 160%; box-sizing: content-box; border: 0; border-radius: 0; letter-spacing: -.3px; padding: 18px; color: #f4f4f4; white-space: pre-wrap;">[
+    {
+        <span style="color: #9cdcfe; line-height: 160%; box-sizing: content-box;">&quot;conversation&quot;</span>: [
+            {
+                <span style="color: #9cdcfe; line-height: 160%; box-sizing: content-box;">&quot;input&quot;</span>: <span style="color: #d69d85; line-height: 160%; box-sizing: content-box;">&quot;请介绍一下你自己&quot;</span>,
+                <span style="color: #9cdcfe; line-height: 160%; box-sizing: content-box;">&quot;output&quot;</span>: <span style="color: #d69d85; line-height: 160%; box-sizing: content-box;">&quot;我是不要葱姜蒜大佬的小助手，内在是上海AI实验室书生·浦语的7B大模型哦&quot;</span>
+            }
+        ]
+    },
+    {
+        <span style="color: #9cdcfe; line-height: 160%; box-sizing: content-box;">&quot;conversation&quot;</span>: [
+            {
+                <span style="color: #9cdcfe; line-height: 160%; box-sizing: content-box;">&quot;input&quot;</span>: <span style="color: #d69d85; line-height: 160%; box-sizing: content-box;">&quot;请做一下自我介绍&quot;</span>,
+                <span style="color: #9cdcfe; line-height: 160%; box-sizing: content-box;">&quot;output&quot;</span>: <span style="color: #d69d85; line-height: 160%; box-sizing: content-box;">&quot;我是不要葱姜蒜大佬的小助手，内在是上海AI实验室书生·浦语的7B大模型哦&quot;</span>
+            }
+        ]
+    }
+]
+</code></pre>
+<h2 style="line-height: 160%; box-sizing: content-box; font-weight: 700; font-size: 34px; border-bottom: 1px solid #dbdbdb; color: #333;">配置文件</h2>
+<pre style="line-height: 160%; box-sizing: content-box; border: 0; border-radius: 0; margin: 2px 0 8px; background-color: #f5f7f8;"><code style="display: block; overflow-x: auto; background: #1e1e1e; line-height: 160%; box-sizing: content-box; border: 0; border-radius: 0; letter-spacing: -.3px; padding: 18px; color: #f4f4f4; white-space: pre-wrap;"><span style="color: #57a64a; font-style: italic; line-height: 160%; box-sizing: content-box;"># 列出所有内置配置</span>
+xtuner list-cfg
+</code></pre>
+<pre style="line-height: 160%; box-sizing: content-box; border: 0; border-radius: 0; margin: 2px 0 8px; background-color: #f5f7f8;"><code style="display: block; overflow-x: auto; background: #1e1e1e; line-height: 160%; box-sizing: content-box; border: 0; border-radius: 0; letter-spacing: -.3px; padding: 18px; color: #f4f4f4; white-space: pre-wrap;"><span style="color: #57a64a; font-style: italic; line-height: 160%; box-sizing: content-box;">#创建用于存放配置的文件夹config并进入</span>
+mkdir /root/personal_assistant/config &amp;&amp; <span style="color: #4ec9b0; line-height: 160%; box-sizing: content-box;">cd</span> /root/personal_assistant/config
+</code></pre>
+<pre style="line-height: 160%; box-sizing: content-box; border: 0; border-radius: 0; margin: 2px 0 8px; background-color: #f5f7f8;"><code style="display: block; overflow-x: auto; background: #1e1e1e; line-height: 160%; box-sizing: content-box; border: 0; border-radius: 0; letter-spacing: -.3px; padding: 18px; color: #f4f4f4; white-space: pre-wrap;">xtuner copy-cfg internlm_chat_7b_qlora_oasst1_e3 .
+</code></pre>
+<p style="line-height: 160%; box-sizing: content-box; margin: 10px 0; color: #333;">修改配置文件中数据路径、模型位置、训练参数等参数</p>
+<h2 style="line-height: 160%; box-sizing: content-box; font-weight: 700; font-size: 34px; border-bottom: 1px solid #dbdbdb; color: #333;">微调</h2>
+<pre style="line-height: 160%; box-sizing: content-box; border: 0; border-radius: 0; margin: 2px 0 8px; background-color: #f5f7f8;"><code style="display: block; overflow-x: auto; background: #1e1e1e; line-height: 160%; box-sizing: content-box; border: 0; border-radius: 0; letter-spacing: -.3px; padding: 18px; color: #f4f4f4; white-space: pre-wrap;">xtuner train /root/personal_assistant/config/internlm_chat_7b_qlora_oasst1_e3_copy.py
+</code></pre>
+<h2 style="line-height: 160%; box-sizing: content-box; font-weight: 700; font-size: 34px; border-bottom: 1px solid #dbdbdb; color: #333;">转为hf模型</h2>
+<pre style="line-height: 160%; box-sizing: content-box; border: 0; border-radius: 0; margin: 2px 0 8px; background-color: #f5f7f8;"><code style="display: block; overflow-x: auto; background: #1e1e1e; line-height: 160%; box-sizing: content-box; border: 0; border-radius: 0; letter-spacing: -.3px; padding: 18px; color: #f4f4f4; white-space: pre-wrap;"><span style="color: #57a64a; font-style: italic; line-height: 160%; box-sizing: content-box;"># 创建用于存放Hugging Face格式参数的hf文件夹</span>
+mkdir /root/personal_assistant/config/work_dirs/hf
+<span style="color: #4ec9b0; line-height: 160%; box-sizing: content-box;">export</span> MKL_SERVICE_FORCE_INTEL=1
+<span style="color: #57a64a; font-style: italic; line-height: 160%; box-sizing: content-box;"># 配置文件存放的位置</span>
+<span style="color: #4ec9b0; line-height: 160%; box-sizing: content-box;">export</span> CONFIG_NAME_OR_PATH=/root/personal_assistant/config/internlm_chat_7b_qlora_oasst1_e3_copy.py
+<span style="color: #57a64a; font-style: italic; line-height: 160%; box-sizing: content-box;"># 模型训练后得到的pth格式参数存放的位置</span>
+<span style="color: #4ec9b0; line-height: 160%; box-sizing: content-box;">export</span> PTH=/root/personal_assistant/config/work_dirs/internlm_chat_7b_qlora_oasst1_e3_copy/epoch_3.pth
+<span style="color: #57a64a; font-style: italic; line-height: 160%; box-sizing: content-box;"># pth文件转换为Hugging Face格式后参数存放的位置</span>
+<span style="color: #4ec9b0; line-height: 160%; box-sizing: content-box;">export</span> SAVE_PATH=/root/personal_assistant/config/work_dirs/hf
+<span style="color: #57a64a; font-style: italic; line-height: 160%; box-sizing: content-box;"># 执行参数转换</span>
+xtuner convert pth_to_hf <span style="color: #bd63c5; line-height: 160%; box-sizing: content-box;">$CONFIG_NAME_OR_PATH</span> <span style="color: #bd63c5; line-height: 160%; box-sizing: content-box;">$PTH</span> <span style="color: #bd63c5; line-height: 160%; box-sizing: content-box;">$SAVE_PATH</span>
+</code></pre>
+<h2 style="line-height: 160%; box-sizing: content-box; font-weight: 700; font-size: 34px; border-bottom: 1px solid #dbdbdb; color: #333;">融合</h2>
+<pre style="line-height: 160%; box-sizing: content-box; border: 0; border-radius: 0; margin: 2px 0 8px; background-color: #f5f7f8;"><code style="display: block; overflow-x: auto; background: #1e1e1e; line-height: 160%; box-sizing: content-box; border: 0; border-radius: 0; letter-spacing: -.3px; padding: 18px; color: #f4f4f4; white-space: pre-wrap;"><span style="color: #4ec9b0; line-height: 160%; box-sizing: content-box;">export</span> MKL_SERVICE_FORCE_INTEL=1
+<span style="color: #4ec9b0; line-height: 160%; box-sizing: content-box;">export</span> MKL_THREADING_LAYER=<span style="color: #d69d85; line-height: 160%; box-sizing: content-box;">'GNU'</span>
+<span style="color: #57a64a; font-style: italic; line-height: 160%; box-sizing: content-box;"># 原始模型参数存放的位置</span>
+<span style="color: #4ec9b0; line-height: 160%; box-sizing: content-box;">export</span> NAME_OR_PATH_TO_LLM=/root/personal_assistant/model/Shanghai_AI_Laboratory/internlm-chat-7b
+<span style="color: #57a64a; font-style: italic; line-height: 160%; box-sizing: content-box;"># Hugging Face格式参数存放的位置</span>
+<span style="color: #4ec9b0; line-height: 160%; box-sizing: content-box;">export</span> NAME_OR_PATH_TO_ADAPTER=/root/personal_assistant/config/work_dirs/hf
+<span style="color: #57a64a; font-style: italic; line-height: 160%; box-sizing: content-box;"># 最终Merge后的参数存放的位置</span>
+mkdir /root/personal_assistant/config/work_dirs/hf_merge
+<span style="color: #4ec9b0; line-height: 160%; box-sizing: content-box;">export</span> SAVE_PATH=/root/personal_assistant/config/work_dirs/hf_merge
+<span style="color: #57a64a; font-style: italic; line-height: 160%; box-sizing: content-box;"># 执行参数Merge</span>
+xtuner convert merge \
+    <span style="color: #bd63c5; line-height: 160%; box-sizing: content-box;">$NAME_OR_PATH_TO_LLM</span> \
+    <span style="color: #bd63c5; line-height: 160%; box-sizing: content-box;">$NAME_OR_PATH_TO_ADAPTER</span> \
+    <span style="color: #bd63c5; line-height: 160%; box-sizing: content-box;">$SAVE_PATH</span> \
+    --max-shard-size 2GB
+</code></pre>
+<h2 style="line-height: 160%; box-sizing: content-box; font-weight: 700; font-size: 34px; border-bottom: 1px solid #dbdbdb; color: #333;">作业</h2>
+<p style="line-height: 160%; box-sizing: content-box; margin: 10px 0; color: #333;"><strong style="line-height: 160%; box-sizing: content-box; font-weight: 700;">基础作业：</strong><br/>
+构建数据集，使用 XTuner 微调 InternLM-Chat-7B 模型, 让模型学习到它是你的智能小助手，效果如下图所示，本作业训练出来的模型的输出需要<strong style="line-height: 160%; box-sizing: content-box; font-weight: 700;">将不要葱姜蒜大佬</strong>替换成自己名字或昵称(zhanghay)！<br/>
+<strong style="line-height: 160%; box-sizing: content-box; font-weight: 700;">作业如下：</strong><br/>
+1、准备数据和模型<br/>
+<img src="【3浦语实战营】Xtuner微调_files/Image.png" type="image/png" data-filename="Image.png"/><br/>
+模型直接软连接过去<br/>
+2、配置文件<br/>
+<img src="【3浦语实战营】Xtuner微调_files/Image [1].png" type="image/png" data-filename="Image.png"/></p>
+<p style="line-height: 160%; box-sizing: content-box; margin: 10px 0; color: #333;">3、训练中<br/>
+<img src="【3浦语实战营】Xtuner微调_files/Image [2].png" type="image/png" data-filename="Image.png"/></p>
+<p style="line-height: 160%; box-sizing: content-box; margin: 10px 0; color: #333;">4、融合模型<br/>
+<img src="【3浦语实战营】Xtuner微调_files/Image [3].png" type="image/png" data-filename="Image.png"/></p>
+<p style="line-height: 160%; box-sizing: content-box; margin: 10px 0; color: #333;">5、web使用<br/>
+这里直接用的Demo案例中的环境与InternLM库代码，更改了模型路径为融合后模型。一开始报错：<br/>
+<code style="line-height: 160%; box-sizing: content-box; border: 0; border-radius: 0; color: #c1788b; padding: 4px 4px 2px 0; letter-spacing: -.3px;">StreamlitAPIException: Failed to load the provided avatar value as an image</code><br/>
+参考了<a href="https://blog.csdn.net/m0_50123831/article/details/135555893" style="line-height: 160%; box-sizing: content-box; text-decoration: underline; color: #5286bc;">同学作业</a>，了解到是web_demo.py中加载图片路径的问题。与文中不同的是,我直接切换路径到<code style="line-height: 160%; box-sizing: content-box; border: 0; border-radius: 0; color: #c1788b; padding: 4px 4px 2px 0; letter-spacing: -.3px;">InternLM</code>库路径下运行<code style="line-height: 160%; box-sizing: content-box; border: 0; border-radius: 0; color: #c1788b; padding: 4px 4px 2px 0; letter-spacing: -.3px;">web_demo.py</code>。</p>
+<p style="line-height: 160%; box-sizing: content-box; margin: 10px 0; color: #333;"><img src="【3浦语实战营】Xtuner微调_files/Image [4].png" type="image/png" data-filename="Image.png"/></p>
+<p style="line-height: 160%; box-sizing: content-box; margin: 10px 0; color: #333;">可以了，名称正确。确认了错误是头像<code style="line-height: 160%; box-sizing: content-box; border: 0; border-radius: 0; color: #c1788b; padding: 4px 4px 2px 0; letter-spacing: -.3px;">user_avator、robot_avato</code>的问题。</p>
+</div><center style="display:none !important;visibility:collapse !important;height:0 !important;white-space:nowrap;width:100%;overflow:hidden">%23%20Xtuner%E5%BE%AE%E8%B0%83%0A%5BTOC%5D%0A%0A%23%23%20%E5%9F%BA%E6%9C%AC%E6%80%9D%E8%B7%AF%0A%E5%BE%AE%E8%B0%83%E5%9F%BA%E6%9C%AC%E6%80%9D%E8%B7%AF%EF%BC%9A%0A1%E3%80%81%E5%87%86%E5%A4%87%E5%9F%BA%E7%A1%80%E6%A8%A1%E5%9E%8B%0A2%E3%80%81%E5%87%86%E5%A4%87Xtuner%E5%B7%A5%E5%85%B7%0A3%E3%80%81%E5%87%86%E5%A4%87%E8%87%AA%E5%B7%B1%E7%9A%84%E6%95%B0%E6%8D%AE%0A4%E3%80%81%E5%A4%8D%E7%94%A8Xtuner%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%0A4%E3%80%81%E4%BD%BF%E7%94%A8Xtuner%E8%AE%AD%E7%BB%83%0A5%E3%80%81%E8%BD%AC%E4%B8%BAhf%E6%A0%BC%E5%BC%8F%0A6%E3%80%81%E4%B8%8E%E5%9F%BA%E7%A1%80%E6%A8%A1%E5%9E%8B%E8%9E%8D%E5%90%88%0A7%E3%80%81%E8%B0%83%E7%94%A8%0A%23%23%20%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87%0A%E4%B8%BB%E8%A6%81%E8%A6%81%E6%B1%82%EF%BC%9A%0A%0A-%20python%3D3.10%0A-%208G%E6%98%BE%E5%8D%A1%0A-%20pytorch%3D2.0.1%0A%0A%60%60%60bash%0A%0Ait%20clone%20-b%20v0.1.9%20%20https%3A%2F%2Fgithub.com%2FInternLM%2Fxtuner%0A%0Acd%20xtuner%0A%0A%23%20%E4%BB%8E%E6%BA%90%E7%A0%81%E5%AE%89%E8%A3%85%20XTuner%0Apip%20install%20-e%20'.%5Ball%5D'%0A%60%60%60%0A%23%23%23%20%E6%A8%A1%E5%9E%8B%E5%87%86%E5%A4%87%0A%E9%80%9A%E8%BF%87%E6%9C%AC%E5%9C%B0%E3%80%81modelscope%E7%AD%89%E6%96%B9%E5%BC%8F%E4%B8%8B%E8%BD%BD%E6%A8%A1%E5%9E%8B%E3%80%82%0A%0A%23%23%23%20%E6%95%B0%E6%8D%AE%E5%87%86%E5%A4%87%0A%E5%85%AC%E5%85%B1%E6%95%B0%E6%8D%AE%E5%8F%AF%E4%BB%A5%E4%BB%8Ehuggingface%E4%B8%8B%E8%BD%BD%EF%BC%8C%E8%87%AA%E5%B7%B1%E4%B9%9F%E5%8F%AF%E8%87%AA%E8%A1%8C%E5%87%86%E5%A4%87%0A%0A**%E5%85%AC%E5%85%B1%E6%95%B0%E6%8D%AE**%0A%5Bhttps%3A%2F%2Fhuggingface.co%2Fdatasets%2Ftimdettmers%2Fopenassistant-guanaco%2Ftree%2Fmain%5D(https%3A%2F%2Fhuggingface.co%2Fdatasets%2Ftimdettmers%2Fopenassistant-guanaco%2Ftree%2Fmain)%0A%0A**%E8%87%AA%E5%BB%BA%E6%95%B0%E6%8D%AE**%0A%E5%85%B6%E5%AE%9E%E6%98%AFjson%E6%96%87%E4%BB%B6%E3%80%82%E4%BE%8B%E5%A6%82%0A%0A%60%60%60json%0A%5B%0A%C2%A0%20%C2%A0%20%7B%0A%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%22conversation%22%3A%20%5B%0A%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%7B%0A%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%22input%22%3A%20%22%E8%AF%B7%E4%BB%8B%E7%BB%8D%E4%B8%80%E4%B8%8B%E4%BD%A0%E8%87%AA%E5%B7%B1%22%2C%0A%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%22output%22%3A%20%22%E6%88%91%E6%98%AF%E4%B8%8D%E8%A6%81%E8%91%B1%E5%A7%9C%E8%92%9C%E5%A4%A7%E4%BD%AC%E7%9A%84%E5%B0%8F%E5%8A%A9%E6%89%8B%EF%BC%8C%E5%86%85%E5%9C%A8%E6%98%AF%E4%B8%8A%E6%B5%B7AI%E5%AE%9E%E9%AA%8C%E5%AE%A4%E4%B9%A6%E7%94%9F%C2%B7%E6%B5%A6%E8%AF%AD%E7%9A%847B%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%93%A6%22%0A%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%7D%0A%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%5D%0A%C2%A0%20%C2%A0%20%7D%2C%0A%C2%A0%20%C2%A0%20%7B%0A%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%22conversation%22%3A%20%5B%0A%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%7B%0A%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%22input%22%3A%20%22%E8%AF%B7%E5%81%9A%E4%B8%80%E4%B8%8B%E8%87%AA%E6%88%91%E4%BB%8B%E7%BB%8D%22%2C%0A%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%22output%22%3A%20%22%E6%88%91%E6%98%AF%E4%B8%8D%E8%A6%81%E8%91%B1%E5%A7%9C%E8%92%9C%E5%A4%A7%E4%BD%AC%E7%9A%84%E5%B0%8F%E5%8A%A9%E6%89%8B%EF%BC%8C%E5%86%85%E5%9C%A8%E6%98%AF%E4%B8%8A%E6%B5%B7AI%E5%AE%9E%E9%AA%8C%E5%AE%A4%E4%B9%A6%E7%94%9F%C2%B7%E6%B5%A6%E8%AF%AD%E7%9A%847B%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%93%A6%22%0A%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%7D%0A%C2%A0%20%C2%A0%20%C2%A0%20%C2%A0%20%5D%0A%C2%A0%20%C2%A0%20%7D%0A%5D%0A%60%60%60%0A%23%23%20%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%0A%0A%0A%60%60%60bash%0A%23%20%E5%88%97%E5%87%BA%E6%89%80%E6%9C%89%E5%86%85%E7%BD%AE%E9%85%8D%E7%BD%AE%0Axtuner%20list-cfg%0A%60%60%60%0A%60%60%60bash%0A%23%E5%88%9B%E5%BB%BA%E7%94%A8%E4%BA%8E%E5%AD%98%E6%94%BE%E9%85%8D%E7%BD%AE%E7%9A%84%E6%96%87%E4%BB%B6%E5%A4%B9config%E5%B9%B6%E8%BF%9B%E5%85%A5%0Amkdir%20%2Froot%2Fpersonal_assistant%2Fconfig%20%26%26%20cd%20%2Froot%2Fpersonal_assistant%2Fconfig%0A%60%60%60%0A%0A%60%60%60bash%0Axtuner%20copy-cfg%20internlm_chat_7b_qlora_oasst1_e3%20.%0A%60%60%60%0A%0A%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E4%B8%AD%E6%95%B0%E6%8D%AE%E8%B7%AF%E5%BE%84%E3%80%81%E6%A8%A1%E5%9E%8B%E4%BD%8D%E7%BD%AE%E3%80%81%E8%AE%AD%E7%BB%83%E5%8F%82%E6%95%B0%E7%AD%89%E5%8F%82%E6%95%B0%0A%0A%23%23%20%E5%BE%AE%E8%B0%83%0A%0A%0A%60%60%60bash%0Axtuner%20train%20%2Froot%2Fpersonal_assistant%2Fconfig%2Finternlm_chat_7b_qlora_oasst1_e3_copy.py%0A%60%60%60%0A%0A%23%23%20%E8%BD%AC%E4%B8%BAhf%E6%A8%A1%E5%9E%8B%0A%0A%60%60%60bash%0A%23%20%E5%88%9B%E5%BB%BA%E7%94%A8%E4%BA%8E%E5%AD%98%E6%94%BEHugging%20Face%E6%A0%BC%E5%BC%8F%E5%8F%82%E6%95%B0%E7%9A%84hf%E6%96%87%E4%BB%B6%E5%A4%B9%0Amkdir%20%2Froot%2Fpersonal_assistant%2Fconfig%2Fwork_dirs%2Fhf%0Aexport%20MKL_SERVICE_FORCE_INTEL%3D1%0A%23%20%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E5%AD%98%E6%94%BE%E7%9A%84%E4%BD%8D%E7%BD%AE%0Aexport%20CONFIG_NAME_OR_PATH%3D%2Froot%2Fpersonal_assistant%2Fconfig%2Finternlm_chat_7b_qlora_oasst1_e3_copy.py%0A%23%20%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%90%8E%E5%BE%97%E5%88%B0%E7%9A%84pth%E6%A0%BC%E5%BC%8F%E5%8F%82%E6%95%B0%E5%AD%98%E6%94%BE%E7%9A%84%E4%BD%8D%E7%BD%AE%0Aexport%20PTH%3D%2Froot%2Fpersonal_assistant%2Fconfig%2Fwork_dirs%2Finternlm_chat_7b_qlora_oasst1_e3_copy%2Fepoch_3.pth%0A%23%20pth%E6%96%87%E4%BB%B6%E8%BD%AC%E6%8D%A2%E4%B8%BAHugging%20Face%E6%A0%BC%E5%BC%8F%E5%90%8E%E5%8F%82%E6%95%B0%E5%AD%98%E6%94%BE%E7%9A%84%E4%BD%8D%E7%BD%AE%0Aexport%20SAVE_PATH%3D%2Froot%2Fpersonal_assistant%2Fconfig%2Fwork_dirs%2Fhf%0A%23%20%E6%89%A7%E8%A1%8C%E5%8F%82%E6%95%B0%E8%BD%AC%E6%8D%A2%0Axtuner%20convert%20pth_to_hf%20%24CONFIG_NAME_OR_PATH%20%24PTH%20%24SAVE_PATH%0A%60%60%60%0A%0A%23%23%20%E8%9E%8D%E5%90%88%0A%0A%60%60%60bash%0Aexport%20MKL_SERVICE_FORCE_INTEL%3D1%0Aexport%20MKL_THREADING_LAYER%3D'GNU'%0A%23%20%E5%8E%9F%E5%A7%8B%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%AD%98%E6%94%BE%E7%9A%84%E4%BD%8D%E7%BD%AE%0Aexport%20NAME_OR_PATH_TO_LLM%3D%2Froot%2Fpersonal_assistant%2Fmodel%2FShanghai_AI_Laboratory%2Finternlm-chat-7b%0A%23%20Hugging%20Face%E6%A0%BC%E5%BC%8F%E5%8F%82%E6%95%B0%E5%AD%98%E6%94%BE%E7%9A%84%E4%BD%8D%E7%BD%AE%0Aexport%20NAME_OR_PATH_TO_ADAPTER%3D%2Froot%2Fpersonal_assistant%2Fconfig%2Fwork_dirs%2Fhf%0A%23%20%E6%9C%80%E7%BB%88Merge%E5%90%8E%E7%9A%84%E5%8F%82%E6%95%B0%E5%AD%98%E6%94%BE%E7%9A%84%E4%BD%8D%E7%BD%AE%0Amkdir%20%2Froot%2Fpersonal_assistant%2Fconfig%2Fwork_dirs%2Fhf_merge%0Aexport%20SAVE_PATH%3D%2Froot%2Fpersonal_assistant%2Fconfig%2Fwork_dirs%2Fhf_merge%0A%23%20%E6%89%A7%E8%A1%8C%E5%8F%82%E6%95%B0Merge%0Axtuner%20convert%20merge%20%5C%0A%C2%A0%20%C2%A0%20%24NAME_OR_PATH_TO_LLM%20%5C%0A%C2%A0%20%C2%A0%20%24NAME_OR_PATH_TO_ADAPTER%20%5C%0A%C2%A0%20%C2%A0%20%24SAVE_PATH%20%5C%0A%C2%A0%20%C2%A0%20--max-shard-size%202GB%0A%60%60%60%0A%0A%23%23%20%E5%AF%B9%E8%AF%9D%0A%E5%8F%82%E8%80%83demo%E8%8A%82%EF%BC%8C%E6%9B%B4%E6%94%B9%E6%A8%A1%E5%9E%8B%E8%B7%AF%E5%BE%84%E4%B8%BA%E8%9E%8D%E5%90%88%E5%90%8E%E6%A8%A1%E5%9E%8B%E6%96%87%E4%BB%B6%E5%A4%B9%E5%8D%B3%E5%8F%AF%0A%0A%23%23%20%E4%BD%9C%E4%B8%9A%0A%0A**%E5%9F%BA%E7%A1%80%E4%BD%9C%E4%B8%9A%EF%BC%9A**%0A%E6%9E%84%E5%BB%BA%E6%95%B0%E6%8D%AE%E9%9B%86%EF%BC%8C%E4%BD%BF%E7%94%A8%20XTuner%20%E5%BE%AE%E8%B0%83%20InternLM-Chat-7B%20%E6%A8%A1%E5%9E%8B%2C%20%E8%AE%A9%E6%A8%A1%E5%9E%8B%E5%AD%A6%E4%B9%A0%E5%88%B0%E5%AE%83%E6%98%AF%E4%BD%A0%E7%9A%84%E6%99%BA%E8%83%BD%E5%B0%8F%E5%8A%A9%E6%89%8B%EF%BC%8C%E6%95%88%E6%9E%9C%E5%A6%82%E4%B8%8B%E5%9B%BE%E6%89%80%E7%A4%BA%EF%BC%8C%E6%9C%AC%E4%BD%9C%E4%B8%9A%E8%AE%AD%E7%BB%83%E5%87%BA%E6%9D%A5%E7%9A%84%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%BE%93%E5%87%BA%E9%9C%80%E8%A6%81**%E5%B0%86%E4%B8%8D%E8%A6%81%E8%91%B1%E5%A7%9C%E8%92%9C%E5%A4%A7%E4%BD%AC**%E6%9B%BF%E6%8D%A2%E6%88%90%E8%87%AA%E5%B7%B1%E5%90%8D%E5%AD%97%E6%88%96%E6%98%B5%E7%A7%B0(zhanghay)%EF%BC%81%0A**%E4%BD%9C%E4%B8%9A%E5%A6%82%E4%B8%8B%EF%BC%9A**%0A1%E3%80%81%E5%87%86%E5%A4%87%E6%95%B0%E6%8D%AE%E5%92%8C%E6%A8%A1%E5%9E%8B%0A!%5B9d582d6611d3efb37d947b9394e05fd8.png%5D(en-resource%3A%2F%2Fdatabase%2F5600%3A0)%0A%E6%A8%A1%E5%9E%8B%E7%9B%B4%E6%8E%A5%E8%BD%AF%E8%BF%9E%E6%8E%A5%E8%BF%87%E5%8E%BB%0A2%E3%80%81%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%0A!%5Ba3d727d7b819c7f8dd9515a9383304b5.png%5D(en-resource%3A%2F%2Fdatabase%2F5598%3A0)%0A%0A3%E3%80%81%E8%AE%AD%E7%BB%83%E4%B8%AD%0A!%5B3c430a89265af3000d8ce30193fef6c3.png%5D(en-resource%3A%2F%2Fdatabase%2F5596%3A0)%0A%0A4%E3%80%81%E8%9E%8D%E5%90%88%E6%A8%A1%E5%9E%8B%0A!%5Beaadfe0ef0558f84a3253822e8e9ed81.png%5D(en-resource%3A%2F%2Fdatabase%2F5602%3A0)%0A%0A5%E3%80%81web%E4%BD%BF%E7%94%A8%0A%E8%BF%99%E9%87%8C%E7%9B%B4%E6%8E%A5%E7%94%A8%E7%9A%84Demo%E6%A1%88%E4%BE%8B%E4%B8%AD%E7%9A%84%E7%8E%AF%E5%A2%83%E4%B8%8EInternLM%E5%BA%93%E4%BB%A3%E7%A0%81%EF%BC%8C%E6%9B%B4%E6%94%B9%E4%BA%86%E6%A8%A1%E5%9E%8B%E8%B7%AF%E5%BE%84%E4%B8%BA%E8%9E%8D%E5%90%88%E5%90%8E%E6%A8%A1%E5%9E%8B%E3%80%82%E4%B8%80%E5%BC%80%E5%A7%8B%E6%8A%A5%E9%94%99%EF%BC%9A%0A%60StreamlitAPIException%3A%20Failed%20to%20load%20the%20provided%20avatar%20value%20as%20an%20image%60%0A%E5%8F%82%E8%80%83%E4%BA%86%5B%E5%90%8C%E5%AD%A6%E4%BD%9C%E4%B8%9A%5D(https%3A%2F%2Fblog.csdn.net%2Fm0_50123831%2Farticle%2Fdetails%2F135555893)%EF%BC%8C%E4%BA%86%E8%A7%A3%E5%88%B0%E6%98%AFweb_demo.py%E4%B8%AD%E5%8A%A0%E8%BD%BD%E5%9B%BE%E7%89%87%E8%B7%AF%E5%BE%84%E7%9A%84%E9%97%AE%E9%A2%98%E3%80%82%E4%B8%8E%E6%96%87%E4%B8%AD%E4%B8%8D%E5%90%8C%E7%9A%84%E6%98%AF%2C%E6%88%91%E7%9B%B4%E6%8E%A5%E5%88%87%E6%8D%A2%E8%B7%AF%E5%BE%84%E5%88%B0%60InternLM%60%E5%BA%93%E8%B7%AF%E5%BE%84%E4%B8%8B%E8%BF%90%E8%A1%8C%60web_demo.py%60%E3%80%82%0A%0A!%5B134fdb1df92fbe7d10669d6a0ffb8411.png%5D(en-resource%3A%2F%2Fdatabase%2F5604%3A0)%0A%0A%E5%8F%AF%E4%BB%A5%E4%BA%86%EF%BC%8C%E5%90%8D%E7%A7%B0%E6%AD%A3%E7%A1%AE%E3%80%82%E7%A1%AE%E8%AE%A4%E4%BA%86%E9%94%99%E8%AF%AF%E6%98%AF%E5%A4%B4%E5%83%8F%60%0Auser_avator%E3%80%81robot_avato%60%E7%9A%84%E9%97%AE%E9%A2%98%E3%80%82%0A%0A%0A%0A%0A</center></span>
+</div></body></html> 
